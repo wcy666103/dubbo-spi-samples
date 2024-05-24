@@ -59,7 +59,6 @@ jobs:
   # Build dubbo-build-tool
   build-tools:
     name: "Build-tools"
-    needs: check-license
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
