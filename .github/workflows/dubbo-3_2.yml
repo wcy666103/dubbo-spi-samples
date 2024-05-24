@@ -56,6 +56,45 @@ jobs:
         run: |
           ./mvnw --batch-mode --no-snapshot-updates --no-transfer-progress --settings ${{github.workspace}}/.mvn/settings.xml clean
 
+  # Build dubbo-build-tool
+  build-tools:
+    name: "Build-tools"
+    needs: check-license
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+      fail-fast: false
+    outputs:
+      cache-key: ${{ steps.dubbo-build-tools.cache }}
+    steps:
+      - name: Support long paths on Windows
+        if: ${{ startsWith( matrix.os, 'windows') }}
+        run: git config --system core.longpaths true
+      - uses: actions/checkout@v4
+        name: build tools
+        with:
+          repository: 'apache/dubbo'
+          ref: '3.2'
+          path: dubbo
+      - name: "Set up JDK 21"
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - uses: actions/cache@v4
+        name: "Cache local Maven repository"
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+            ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+      - name: "Build tools"
+        run: |
+          cd ./dubbo
+          ./mvnw --batch-mode -U -e --no-transfer-progress install -pl dubbo-build-tools -am -DskipTests=true
+
   build-dubbo:
     runs-on: ubuntu-latest
     strategy:
@@ -108,7 +147,7 @@ jobs:
           ./mvnw --batch-mode --no-snapshot-updates --no-transfer-progress  clean install -Dmaven.test.skip=true -Dmaven.test.skip.exec=true
 
   build-spi-extensions:
-    needs: [build-dubbo]
+    needs: [build-dubbo,build-tools]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
