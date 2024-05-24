@@ -27,6 +27,7 @@ env:
     spring-boot.version:2.7.6;
     '
   DUBBO_REF: '3.2'
+  SPI_REF: '3.2.0'
 
 jobs:
   build-spi-samples:
@@ -117,7 +118,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: 'apache/dubbo-spi-extensions'
-          ref: ${{env.DUBBO_REF}}
+          ref: ${{env.SPI_REF}}
       - name: Get commit id and dubbo spi version
         id: git-checker
         run: |
