@@ -109,17 +109,33 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+    # Map a step output to a job output
+    outputs:
+      commit_id: ${{ steps.git-checker.outputs.commit_id2 }}
+      version: ${{ steps.git-checker.outputs.version2 }}
     steps:
       - uses: actions/checkout@v3
         with:
           repository: 'apache/dubbo-spi-extensions'
           ref: ${{env.DUBBO_REF}}
+      - name: Get commit id and dubbo spi version
+        id: git-checker
+        run: |
+          # Calculate Dubbo spi Version
+          REVISION2=`awk '/<revision>[^<]+<\/revision>/{gsub(/<revision>|<\/revision>/,"",$1);print $1;exit;}' pom.xml`
+          echo "::set-output name=version::$REVISION2"
+          echo "dubbo spi version: $REVISION2"
+          #
+          # commit id
+          commit_id2=`git log --format="%H" -n 1`
+          echo "::set-output name=commit_id2::$commit_id2"
+          echo "commit_id2: $commit_id2"
       - name: Dubbo Spi Extensions cache
         id: spicache
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository/org/apache/dubbo-spi-extensions
-          key: ${{ runner.os }}-dubbo-spi-extensions-snapshot-${{steps.git-checker.outputs.commit_id}}
+          key: ${{ runner.os }}-dubbo-spi-extensions-snapshot-${{steps.git-checker.outputs.commit_id2}}
       - name: Cache local Maven repository
         if: steps.spicache.outputs.cache-hit != 'true'
         uses: actions/cache@v3
@@ -188,6 +204,12 @@ jobs:
         with:
           path: ~/.m2/repository/org/apache/dubbo
           key: ${{ runner.os }}-dubbo-snapshot-${{needs.build-dubbo.outputs.commit_id}}
+      - name: Dubbo Spi Extensions cache
+        id: spicache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository/org/apache/dubbo-spi-extensions
+          key: ${{ runner.os }}-dubbo-spi-extensions-snapshot-${{steps.git-checker.outputs.commit_id}}
       - name: Download test list
         uses: actions/download-artifact@v3
         with:
