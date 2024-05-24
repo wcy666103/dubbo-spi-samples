@@ -107,6 +107,7 @@ jobs:
           ./mvnw --batch-mode --no-snapshot-updates --no-transfer-progress  clean install -Dmaven.test.skip=true -Dmaven.test.skip.exec=true
 
   build-spi-extensions:
+    needs: [build-dubbo]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
