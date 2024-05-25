@@ -117,7 +117,7 @@ jobs:
           path: test/jobs
 
   testjob:
-    needs: [prepare_test,build-spi-samples]
+    needs: [prepare_test,build-dubbo,build-spi-samples]
     name: 'Integration Test (Java${{matrix.java}}, Job${{matrix.job_id}})'
     runs-on: ubuntu-latest
     env:
