@@ -28,9 +28,11 @@ env:
     '
   DUBBO_REF: '3.2'
   SPI_REF: '3.2.0'
+  dubbo.version: 3.2.6
 
 jobs:
   build-spi-samples:
+    needs: [build-dubbo]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -47,6 +49,56 @@ jobs:
       - name: Build with Maven
         run: |
           ./mvnw $BUILD_OPTS
+
+  build-dubbo:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    # Map a step output to a job output
+    outputs:
+      commit_id: ${{ steps.git-checker.outputs.commit_id }}
+      version: ${{ steps.git-checker.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: 'apache/dubbo'
+          ref: ${{env.DUBBO_REF}}
+      - name: Get commit id and dubbo version
+        id: git-checker
+        run: |
+          # Calculate Dubbo Version
+          REVISION=`awk '/<revision>[^<]+<\/revision>/{gsub(/<revision>|<\/revision>/,"",$1);print $1;exit;}' pom.xml`
+          echo "::set-output name=version::$REVISION"
+          echo "dubbo version: $REVISION"
+          #
+          # commit id
+          commit_id=`git log --format="%H" -n 1`
+          echo "::set-output name=commit_id::$commit_id"
+          echo "commit_id: $commit_id"
+      - name: Dubbo cache
+        id: dubbocache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository/org/apache/dubbo
+          key: ${{ runner.os }}-dubbo-snapshot-${{steps.git-checker.outputs.commit_id}}
+      - name: Cache local Maven repository
+        if: steps.dubbocache.outputs.cache-hit != 'true'
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-dubbo-${{env.DUBBO_REF}}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-dubbo-${{env.DUBBO_REF}}-maven-
+      - name: Set up JDK 8
+        if: steps.dubbocache.outputs.cache-hit != 'true'
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 8
+      - name: Build dubbo
+        if: steps.dubbocache.outputs.cache-hit != 'true'
+        run: |
+          ./mvnw --batch-mode --no-snapshot-updates --no-transfer-progress  clean install -Dmaven.test.skip=true -Dmaven.test.skip.exec=true
 
   prepare_test:
     runs-on: ubuntu-latest
