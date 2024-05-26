@@ -19,7 +19,6 @@
 
 package org.apache.dubbo.spi.samples.configcenter;
 
-import org.apache.dubbo.samples.EmbeddedZooKeeper;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
