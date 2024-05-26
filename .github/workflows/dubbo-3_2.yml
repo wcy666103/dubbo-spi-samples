@@ -26,7 +26,7 @@ env:
     spring.version:5.3.24;
     spring-boot.version:2.7.6;
     '
-  DUBBO_REF: '3.2.6'
+  DUBBO_REF: 'dubbo-3.2.6'
   SPI_REF: '3.2.0'
   dubbo.version: 3.2.6
 
