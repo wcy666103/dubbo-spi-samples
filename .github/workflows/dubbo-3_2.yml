@@ -60,7 +60,7 @@ jobs:
       - name: "Build Scenarios"
         run: |
           cd ./samples-spi-serialization
-          ../mvnw --batch-mode -U -e --no-transfer-progress install dependency:copy-dependencies -am -DskipTests=true
+          ../mvnw -U -e --no-transfer-progress install dependency:copy-dependencies -am -DskipTests=true
 
   build-dubbo:
     runs-on: ubuntu-latest
