@@ -17,7 +17,6 @@
  *
  */
 
-
 import org.apache.dubbo.smaples.spi.serialization.BigPerson;
 import org.apache.dubbo.smaples.spi.serialization.DemoService;
 

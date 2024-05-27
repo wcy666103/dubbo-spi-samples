@@ -13,8 +13,14 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>samples-spi-serialization-api</module>
         <module>samples-spi-serialization-protobuf</module>
         <module>samples-spi-serialization-gson</module>
+        <module>samples-spi-serialization-avro</module>
+        <module>samples-spi-serialization-fastjson</module>
+        <module>samples-spi-serialization-fst</module>
+        <module>samples-spi-serialization-kryo</module>
+        <module>samples-spi-serialization-protostuff</module>
     </modules>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

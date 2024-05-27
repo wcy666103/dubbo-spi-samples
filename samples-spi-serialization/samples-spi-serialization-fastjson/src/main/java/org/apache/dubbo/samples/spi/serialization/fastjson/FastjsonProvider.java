@@ -17,10 +17,23 @@
  *
  */
 
-package org.apache.dubbo.samples.spi.serialization.gson.api;
+package org.apache.dubbo.samples.spi.serialization.fastjson;
 
-public interface DemoService {
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-    String sayHello(String name);
+import java.util.concurrent.CountDownLatch;
 
+public class FastjsonProvider {
+
+    public static void main(String[] args) throws Exception {
+        new EmbeddedZooKeeper(2181, false).start();
+        // wait for embedded zookeeper start completely.
+        Thread.sleep(1000);
+
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/dubbo-demo-provider.xml");
+        context.start();
+
+        System.out.println("dubbo service started");
+        new CountDownLatch(1).await();
+    }
 }

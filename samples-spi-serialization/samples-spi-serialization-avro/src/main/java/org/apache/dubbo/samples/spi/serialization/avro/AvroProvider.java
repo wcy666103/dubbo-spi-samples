@@ -16,23 +16,23 @@
  *   limitations under the License.
  *
  */
+package org.apache.dubbo.samples.spi.serialization.avro;
 
-package org.apache.dubbo.samples.spi.serialization.gson.impl;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.util.concurrent.CountDownLatch;
 
-import org.apache.dubbo.rpc.RpcContext;
-import org.apache.dubbo.samples.spi.serialization.gson.api.DemoService;
+public class AvroProvider {
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+    public static void main(String[] args) throws Exception {
+        new EmbeddedZooKeeper(2181, false).start();
+        // wait for embedded zookeeper start completely.
+        Thread.sleep(1000);
 
-public class DemoServiceImpl implements DemoService {
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring/dubbo-demo-provider.xml");
+        context.start();
 
-    @Override
-    public String sayHello(String name) {
-        System.out.println("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "] Hello " + name +
-                ", request from consumer: " + RpcContext.getContext().getRemoteAddress());
-        return "Hello " + name + ", response from provider: " + RpcContext.getContext().getLocalAddress();
+        System.out.println("dubbo service started");
+        new CountDownLatch(1).await();
     }
-
 }
