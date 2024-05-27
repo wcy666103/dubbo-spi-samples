@@ -18,7 +18,7 @@ from: app-builtin-zookeeper.yml
 
 props:
   project_name: samples-spi-serialization-kryo
-  main_class: org.apache.dubbo.test.serialization.kryo.KryoProvider
+  main_class: org.apache.dubbo.samples.spi.serialization.kryo.KryoProvider
   zookeeper_port: 2181
   dubbo_port: 20880
 
