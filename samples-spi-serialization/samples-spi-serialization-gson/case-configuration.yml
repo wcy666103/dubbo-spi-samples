@@ -17,8 +17,8 @@
 from: app-builtin-zookeeper.yml
 
 props:
-  project_name: dubbo-serialization-gson-test
-  main_class: org.apache.dubbo.test.serialization.gson.GsonProvider
+  project_name: samples-spi-serialization-gson
+  main_class: org.apache.dubbo.samples.spi.serialization.gson.GsonProvider
   zookeeper_port: 2181
   dubbo_port: 20880
 
